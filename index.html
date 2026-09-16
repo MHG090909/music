@@ -1,68 +1,42 @@
-.<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🎵 آهنگ‌های من</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
-h1 { text-align: center; color: white; font-size: 2.5rem; margin-bottom: 10px; }
-.subtitle { text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 20px; }
-.stats { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-.stat-box { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.9rem; }
-.songs { max-width: 850px; margin: 0 auto; display: grid; gap: 20px; }
-.song { background: white; border-radius: 15px; padding: 20px; display: flex; gap: 20px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.cover { width: 90px; height: 90px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; flex-shrink: 0; position: relative; }
-.rank { position: absolute; top: -8px; right: -8px; background: #f59e0b; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-.info { flex: 1; }
-.info h3 { color: #333; margin-bottom: 10px; }
-audio { width: 100%; height: 40px; margin-bottom: 8px; }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn { display: inline-flex; align-items: center; gap: 5px; background: #06d6a0; color: white; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; font-family: Tahoma; transition: 0.2s; }
-.btn:hover { transform: scale(1.05); }
-.btn.like { background: #ef4444; }
-.btn.like.liked { background: #6b7280; }
-.btn.comment { background: #f59e0b; }
-.comments { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; display: none; }
-.comments.show { display: block; }
-.comment { background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
-.comment .name { font-weight: bold; color: #667eea; margin-bottom: 5px; }
-.comment-form { display: flex; gap: 5px; margin-top: 10px; }
-.comment-form input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-family: Tahoma; }
-.comment-form button { background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-family: Tahoma; }
-@media (max-width: 600px) { h1 { font-size: 1.8rem; } .song { flex-direction: column; } }
+body { font-family: Tahoma; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; margin: 0; }
+h1 { text-align: center; color: white; }
+.stats { text-align: center; color: white; margin-bottom: 20px; font-size: 1.1rem; }
+.song { background: white; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 700px; }
+.actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+button, .btn { padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; color: white; font-family: Tahoma; text-decoration: none; font-weight: bold; }
+.like { background: #ef4444; }
+.download { background: #06d6a0; }
+.comment { background: #f59e0b; }
+.comment-box { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+.comment-box.show { display: block; }
+.comment { background: #f5f5f5; padding: 8px; border-radius: 8px; margin-bottom: 6px; }
+input { padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-family: Tahoma; }
 </style>
 </head>
 <body>
-
 <h1>🎵 آهنگ‌های من</h1>
-<p class="subtitle">گوش بده و دانلود کن</p>
-
-<div class="stats">
-  <div class="stat-box">❤️ <span id="likeCount">0</span> لایک</div>
-  <div class="stat-box">💬 <span id="commentCount">0</span> کامنت</div>
-</div>
-
-<div class="songs" id="songs"></div>
+<div class="stats">❤️ <span id="likeCount">0</span> لایک | 💬 <span id="commentCount">0</span> کامنت</div>
+<div id="songs"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-// ==========================================
-// 🔑 URL فایربیس
-// ==========================================
 const firebaseConfig = {
   databaseURL: "https://music-site-a2343-default-rtdb.firebaseio.com/"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+console.log("🔥 Firebase وصل شد");
 
-// ==========================================
-// آهنگ‌ها
-// ==========================================
 const songs = [
   { id: 1, name: "علی منتظری - جانان", file: "janan.mp3" },
   { id: 2, name: "علی ایزدی - محلی شیرازی", file: "mahali.mp3" }
@@ -72,46 +46,41 @@ let data = { likes: {}, comments: {} };
 
 onValue(ref(db, "likes"), snap => {
   data.likes = snap.val() || {};
+  console.log("❤️ لایک‌ها:", data.likes);
   render();
 });
 
 onValue(ref(db, "comments"), snap => {
   data.comments = snap.val() || {};
+  console.log("💬 کامنت‌ها:", data.comments);
   render();
 });
 
 function render() {
-  const container = document.getElementById("songs");
+  const c = document.getElementById("songs");
   let sorted = [...songs].sort((a,b) => (data.likes[b.id]||0) - (data.likes[a.id]||0));
-  
-  container.innerHTML = sorted.map((s, i) => {
+  c.innerHTML = sorted.map(s => {
     const likes = data.likes[s.id] || 0;
     const liked = localStorage.getItem("liked_" + s.id) === "1";
     return `
     <div class="song">
-      <div class="cover">🎵${i < 3 ? `<div class="rank">${i+1}</div>` : ''}</div>
-      <div class="info">
-        <h3>${s.name}</h3>
-        <audio controls src="${s.file}"></audio>
-        <div class="actions">
-          <button class="btn like ${liked?'liked':''}" onclick="window.toggleLike(${s.id})">
-            ${liked?'💔':'❤️'} ${likes}
-          </button>
-          <a href="${s.file}" download class="btn">⬇️ دانلود</a>
-          <button class="btn comment" onclick="window.toggleComments(${s.id})">💬 کامنت</button>
-        </div>
-        <div class="comments" id="c-${s.id}">
-          <div id="cl-${s.id}"></div>
-          <div class="comment-form">
-            <input id="n-${s.id}" placeholder="اسم">
-            <input id="t-${s.id}" placeholder="کامنت">
-            <button onclick="window.addComment(${s.id})">ارسال</button>
-          </div>
+      <h3>${s.name}</h3>
+      <audio controls src="${s.file}" style="width:100%"></audio>
+      <div class="actions">
+        <button class="like" onclick="window.toggleLike(${s.id})">${liked?'💔':'❤️'} ${likes}</button>
+        <a href="${s.file}" download class="btn download">⬇️ دانلود</a>
+        <button class="comment" onclick="window.toggleComments(${s.id})">💬 کامنت</button>
+      </div>
+      <div class="comment-box" id="c-${s.id}">
+        <div id="cl-${s.id}"></div>
+        <div style="display:flex;gap:5px;margin-top:10px">
+          <input id="n-${s.id}" placeholder="اسم">
+          <input id="t-${s.id}" placeholder="کامنت">
+          <button class="comment" onclick="window.addComment(${s.id})">ارسال</button>
         </div>
       </div>
     </div>`;
   }).join("");
-  
   songs.forEach(s => loadComments(s.id));
   updateStats();
 }
@@ -119,13 +88,8 @@ function render() {
 window.toggleLike = function(id) {
   const liked = localStorage.getItem("liked_" + id) === "1";
   const current = data.likes[id] || 0;
-  if (liked) {
-    set(ref(db, "likes/" + id), Math.max(0, current - 1));
-    localStorage.setItem("liked_" + id, "0");
-  } else {
-    set(ref(db, "likes/" + id), current + 1);
-    localStorage.setItem("liked_" + id, "1");
-  }
+  set(ref(db, "likes/" + id), liked ? Math.max(0, current - 1) : current + 1);
+  localStorage.setItem("liked_" + id, liked ? "0" : "1");
 };
 
 window.toggleComments = function(id) {
@@ -135,36 +99,32 @@ window.toggleComments = function(id) {
 window.addComment = function(id) {
   const name = document.getElementById("n-" + id).value.trim();
   const text = document.getElementById("t-" + id).value.trim();
-  if (!name || !text) return alert("اسم و کامنت رو پر کن!");
-  push(ref(db, "comments/" + id), { name, text, time: Date.now() });
-  document.getElementById("n-" + id).value = "";
-  document.getElementById("t-" + id).value = "";
+  if (!name || !text) return alert("پر کن!");
+  push(ref(db, "comments/" + id), { name, text, time: Date.now() })
+    .then(() => {
+      console.log("✅ کامنت ذخیره شد");
+      document.getElementById("n-" + id).value = "";
+      document.getElementById("t-" + id).value = "";
+    })
+    .catch(e => alert("خطا: " + e.message));
 };
 
 function loadComments(id) {
   const el = document.getElementById("cl-" + id);
   const obj = data.comments[id] || {};
   const list = Object.values(obj).sort((a,b) => a.time - b.time);
-  if (list.length === 0) {
-    el.innerHTML = '<p style="color:#999;font-size:0.85rem;">هنوز کامنتی نیست</p>';
-    return;
-  }
-  el.innerHTML = list.map(c => `
-    <div class="comment">
-      <div class="name">${c.name}</div>
-      <div>${c.text}</div>
-    </div>
-  `).join("");
+  el.innerHTML = list.length === 0
+    ? '<p style="color:#999;font-size:0.85rem">هنوز کامنتی نیست</p>'
+    : list.map(c => `<div class="comment"><b>${c.name}</b>: ${c.text}</div>`).join("");
 }
 
 function updateStats() {
-  let likes = 0, comments = 0;
-  Object.values(data.likes).forEach(v => likes += v);
-  Object.values(data.comments).forEach(obj => comments += Object.keys(obj).length);
-  document.getElementById("likeCount").textContent = likes;
-  document.getElementById("commentCount").textContent = comments;
+  let l = 0, c = 0;
+  Object.values(data.likes).forEach(v => l += v);
+  Object.values(data.comments).forEach(o => c += Object.keys(o).length);
+  document.getElementById("likeCount").textContent = l;
+  document.getElementById("commentCount").textContent = c;
 }
 </script>
-
 </body>
 </html>
