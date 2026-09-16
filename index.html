@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎵 آهنگ‌های من</title>
+<style>
+/* ===== استایل کلی ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+  padding: 20px;
+  transition: 0.3s;
+}
+body.dark { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+
+/* ===== هدر ===== */
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+.subtitle {
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 20px;
+}
+.theme-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid white;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: Tahoma;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* ===== آمار ===== */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+.stat-box {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* ===== جستجو ===== */
+.search-box {
+  max-width: 500px;
+  margin: 0 auto 20px;
+}
+.search-box input {
+  width: 100%;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  font-family: Tahoma;
+}
+
+/* ===== دسته‌بندی ===== */
+.categories {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.cat-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  padding: 8px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: Tahoma;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.cat-btn:hover, .cat-btn.active {
+  background: white;
+  color: #667eea;
+}
+
+/* ===== کارت آهنگ ===== */
+.songs {
+  max-width: 850px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+.song {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.song:hover { transform: translateY(-3px); }
+body.dark .song { background: #2a2a3e; }
+body.dark .info h3 { color: white; }
+
+.cover {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info { flex: 1; min-width: 0; }
+.info h3 {
+  color: #333;
+  margin-bottom: 10px;
+  word-break: break-word;
+  font-size: 1.1rem;
+}
+audio { width: 100%; height: 40px; margin-bottom: 8px; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #06d6a0;
+  color: white;
+  padding: 9px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  font-family: Tahoma;
+  transition: 0.2s;
+}
+.btn:hover { background: #05b586; transform: scale(1.05); }
+.btn.share { background: #667eea; }
+.btn.share:hover { background: #5568d3; }
+.btn.comment { background: #f59e0b; }
+.btn.comment:hover { background: #d97706; }
+
+/* ===== کامنت‌ها ===== */
+.comments {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  display: none;
+}
+body.dark .comments { border-color: #444; }
+.comments.show { display: block; }
+.comment {
+  background: #f5f5f5;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+body.dark .comment { background: #1a1a2e; color: white; }
+.comment .name {
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 5px;
+}
+.comment .text { color: #555; }
+body.dark .comment .text { color: #ccc; }
+.comment-form {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+.comment-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: Tahoma;
+  font-size: 0.9rem;
+}
+body.dark .comment-form input {
+  background: #1a1a2e;
+  color: white;
+  border-color: #444;
+}
+.comment-form button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: Tahoma;
+}
+
+/* ===== حالت خالی ===== */
+.empty {
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  padding: 50px;
+  line-height: 1.8;
+}
+
+/* ===== فوتر ===== */
+.footer {
+  text-align: center;
+  color: rgba(255,255,255,0.8);
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+/* ===== موبایل ===== */
+@media (max-width: 600px) {
+  h1 { font-size: 1.8rem; }
+  .song { flex-direction: column; text-align: center; }
+  .cover { width: 130px; height: 130px; }
+  .actions { justify-content: center; }
+  .theme-btn { position: static; margin-bottom: 15px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="theme-btn" onclick="toggleTheme()">🌙 حالت شب</button>
+  <h1>🎵 آهنگ‌های من</h1>
+  <p class="subtitle">اینجا می‌تونی آهنگ‌های من رو گوش بدی و دانلود کنی</p>
+</header>
+
+<!-- آمار -->
+<div class="stats">
+  <div class="stat-box">🎵 <span id="songCount">0</span> آهنگ</div>
+  <div class="stat-box">👁️ <span id="visitCount">0</span> بازدید</div>
+  <div class="stat-box">⬇️ <span id="downloadCount">0</span> دانلود</div>
+  <div class="stat-box">💬 <span id="commentCount">0</span> کامنت</div>
+</div>
+
+<!-- جستجو -->
+<div class="search-box">
+  <input type="text" id="search" placeholder="🔍 جستجوی آهنگ...">
+</div>
+
+<!-- دسته‌بندی -->
+<div class="categories" id="categories"></div>
+
+<!-- لیست آهنگ‌ها -->
+<div class="songs" id="songs"></div>
+
+<!-- فوتر -->
+<div class="footer">
+  © 2026 - ساخته شده با ❤️
+</div>
+
+<script>
+// =========================================
+// 📝 لیست آهنگ‌ها (اینجا رو ادیت کن)
+// =========================================
+const songs = [
+  {
+    id: 1,
+    name: "علی منتظری - جانان",
+    file: "janan.mp3",
+    cover: "",
+    cat: "سنتی"
+  },
+  {
+    id: 2,
+    name: "علی ایزدی - محلی شیرازی",
+    file: "mahali.mp3",
+    cover: "",
+    cat: "محلی"
+  }
+];
+
+// =========================================
+// 📊 آمار (localStorage)
+// =========================================
+let visits = parseInt(localStorage.getItem("visits") || "0") + 1;
+localStorage.setItem("visits", visits);
+document.getElementById("visitCount").textContent = visits;
+
+let downloads = parseInt(localStorage.getItem("downloads") || "0");
+document.getElementById("downloadCount").textContent = downloads;
+
+document.getElementById("songCount").textContent = songs.length;
+
+// =========================================
+// 📁 دسته‌بندی
+// =========================================
+const categories = ["all", ...new Set(songs.map(s => s.cat))];
+const catContainer = document.getElementById("categories");
+catContainer.innerHTML = categories.map(c => 
+  `<button class="cat-btn ${c === 'all' ? 'active' : ''}" data-cat="${c}">${c === 'all' ? 'همه' : c}</button>`
+).join("");
+
+let currentCat = "all";
+
+// =========================================
+// 🎵 نمایش آهنگ‌ها
+// =========================================
+const container = document.getElementById("songs");
+
+function renderSongs(list) {
+  if (list.length === 0) {
+    container.innerHTML = '<p class="empty">آهنگی پیدا نشد 🎧</p>';
+    return;
+  }
+  container.innerHTML = list.map(song => `
+    <div class="song">
+      <div class="cover">
+        ${song.cover ? `<img src="${song.cover}" alt="">` : '🎵'}
+      </div>
+      <div class="info">
+        <h3>${song.name}</h3>
+        <audio controls preload="none" src="${song.file}"></audio>
+        <div class="actions">
+          <a href="${song.file}" download class="btn" onclick="countDownload()">⬇️ دانلود</a>
+          <button class="btn share" onclick="shareSong('${song.name}', '${song.file}')">📤 اشتراک</button>
+          <button class="btn comment" onclick="toggleComments(${song.id})">💬 کامنت</button>
+        </div>
+        <div class="comments" id="comments-${song.id}">
+          <div id="comment-list-${song.id}"></div>
+          <div class="comment-form">
+            <input type="text" id="name-${song.id}" placeholder="اسمت...">
+            <input type="text" id="text-${song.id}" placeholder="کامنت...">
+            <button onclick="addComment(${song.id})">ارسال</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  
+  // بارگذاری کامنت‌ها
+  list.forEach(song => loadComments(song.id));
+  updateCommentCount();
+}
+
+function filterSongs() {
+  const q = document.getElementById("search").value.toLowerCase();
+  let filtered = songs;
+  if (currentCat !== "all") filtered = filtered.filter(s => s.cat === currentCat);
+  if (q) filtered = filtered.filter(s => s.name.toLowerCase().includes(q));
+  renderSongs(filtered);
+}
+
+renderSongs(songs);
+
+// =========================================
+// 🔍 جستجو
+// =========================================
+document.getElementById("search").addEventListener("input", filterSongs);
+
+// =========================================
+// 📁 دسته‌بندی
+// =========================================
+catContainer.addEventListener("click", e => {
+  if (e.target.classList.contains("cat-btn")) {
+    document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+    e.target.classList.add("active");
+    currentCat = e.target.dataset.cat;
+    filterSongs();
+  }
+});
+
+// =========================================
+// ⬇️ شمارنده دانلود
+// =========================================
+function countDownload() {
+  downloads++;
+  localStorage.setItem("downloads", downloads);
+  document.getElementById("downloadCount").textContent = downloads;
+}
+
+// =========================================
+// 📤 اشتراک‌گذاری
+// =========================================
+function shareSong(name, file) {
+  const url = window.location.origin + window.location.pathname + file;
+  const text = `🎵 ${name}\n${url}`;
+  
+  if (navigator.share) {
+    navigator.share({ title: name, text: text, url: url });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      alert("✅ لینک کپی شد!");
+    }).catch(() => {
+      prompt("لینک رو کپی کن:", text);
+    });
+  }
+}
+
+// =========================================
+// 💬 کامنت‌ها
+// =========================================
+function toggleComments(songId) {
+  const el = document.getElementById(`comments-${songId}`);
+  el.classList.toggle("show");
+}
+
+function addComment(songId) {
+  const name = document.getElementById(`name-${songId}`).value.trim();
+  const text = document.getElementById(`text-${songId}`).value.trim();
+  
+  if (!name || !text) {
+    alert("اسم و کامنت رو پر کن!");
+    return;
+  }
+  
+  const key = `comments_${songId}`;
+  const comments = JSON.parse(localStorage.getItem(key) || "[]");
+  comments.push({ name, text, date: new Date().toLocaleString("fa-IR") });
+  localStorage.setItem(key, JSON.stringify(comments));
+  
+  document.getElementById(`name-${songId}`).value = "";
+  document.getElementById(`text-${songId}`).value = "";
+  
+  loadComments(songId);
+  updateCommentCount();
+}
+
+function loadComments(songId) {
+  const key = `comments_${songId}`;
+  const comments = JSON.parse(localStorage.getItem(key) || "[]");
+  const container = document.getElementById(`comment-list-${songId}`);
+  
+  if (comments.length === 0) {
+    container.innerHTML = '<p style="color:#999;font-size:0.85rem;">هنوز کامنتی نیست</p>';
+    return;
+  }
+  
+  container.innerHTML = comments.map(c => `
+    <div class="comment">
+      <div class="name">${c.name} <span style="color:#999;font-size:0.75rem;">${c.date}</span></div>
+      <div class="text">${c.text}</div>
+    </div>
+  `).join("");
+}
+
+function updateCommentCount() {
+  let total = 0;
+  songs.forEach(s => {
+    const key = `comments_${s.id}`;
+    const comments = JSON.parse(localStorage.getItem(key) || "[]");
+    total += comments.length;
+  });
+  document.getElementById("commentCount").textContent = total;
+}
+
+// =========================================
+// 🌙 حالت شب/روز
+// =========================================
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  document.querySelector(".theme-btn").textContent = isDark ? "☀️ حالت روز" : "🌙 حالت شب";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+}
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  document.querySelector(".theme-btn").textContent = "☀️ حالت روز";
+}
+</script>
+
+</body>
+</html>
