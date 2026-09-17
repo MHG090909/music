@@ -70,17 +70,11 @@ body.dark .comment { background: #1a1a2e; color: white; }
 <div class="footer">© 2026 - ساخته شده با ❤️</div>
 
 <script>
-// ==========================================
-// 🎵 لیست آهنگ‌ها (اینجا رو دستی عوض کن)
-// ==========================================
 const songs = [
   { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cover: "", cat: "پاپ" },
   { id: "song2", name: "علی ایزدی - محلی شیرازی", file: "mahali.mp3", cover: "", cat: "محلی" }
 ];
 
-// ==========================================
-// 💾 ذخیره‌سازی محلی (localStorage)
-// ==========================================
 let data = JSON.parse(localStorage.getItem("musicData") || '{"likes":{},"comments":{}}');
 if (!data.likes) data.likes = {};
 if (!data.comments) data.comments = {};
@@ -91,9 +85,6 @@ function save() {
 
 let currentCat = "all";
 
-// ==========================================
-// دسته‌بندی
-// ==========================================
 const cats = ["all", ...new Set(songs.map(s => s.cat))];
 document.getElementById("categories").innerHTML = cats.map(c =>
   `<button class="cat-btn ${c==='all'?'active':''}" data-cat="${c}">${c==='all'?'همه':c}</button>`
@@ -110,9 +101,6 @@ document.getElementById("categories").addEventListener("click", e => {
 
 document.getElementById("search").addEventListener("input", render);
 
-// ==========================================
-// نمایش
-// ==========================================
 function render() {
   const container = document.getElementById("songs");
   const q = document.getElementById("search").value.toLowerCase();
@@ -204,7 +192,6 @@ if (localStorage.getItem("theme") === "dark") {
   document.querySelector(".theme-btn").textContent = "☀️ حالت روز";
 }
 
-// شروع
 render();
 </script>
 
