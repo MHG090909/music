@@ -8,9 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Tahoma,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px;color:#fff}
 h1{text-align:center;font-size:2.5rem;margin-bottom:10px}
-.subtitle{text-align:center;opacity:0.9;margin-bottom:20px}
 .stats{display:flex;justify-content:center;gap:15px;margin-bottom:25px;flex-wrap:wrap}
 .stat-box{background:rgba(255,255,255,0.2);padding:10px 20px;border-radius:50px;font-size:0.9rem}
+.badge{text-align:center;margin-bottom:15px;padding:8px 15px;border-radius:50px;display:inline-block;font-size:0.85rem}
 .search{max-width:500px;margin:0 auto 20px}
 .search input{width:100%;padding:15px 25px;border:none;border-radius:50px;font-family:Tahoma;font-size:1rem;outline:none}
 .cats{display:flex;justify-content:center;gap:10px;margin-bottom:30px;flex-wrap:wrap}
@@ -34,29 +34,28 @@ audio{width:100%;margin-bottom:8px}
 .cform{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
 .cform input{flex:1;min-width:100px;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:Tahoma}
 .cform button{background:#667eea;color:#fff;border:none;padding:8px 15px;border-radius:8px;cursor:pointer}
-.empty{text-align:center;padding:50px}
 @media(max-width:600px){.song{flex-direction:column;text-align:center}}
 </style>
 </head>
 <body>
 <h1>🎵 آهنگ‌های من</h1>
-<p class="subtitle">گوش بده و دانلود کن</p>
+<div style="text-align:center"><span class="badge" id="badge">⏳ در حال بررسی...</span></div>
 <div class="stats">
-  <div class="stat-box">🎵 <span id="sc">0</span> آهنگ</div>
-  <div class="stat-box">❤️ <span id="lc">0</span> لایک</div>
-  <div class="stat-box">💬 <span id="cc">0</span> کامنت</div>
+  <div class="stat-box">🎵 <span id="sc">0</span></div>
+  <div class="stat-box">❤️ <span id="lc">0</span></div>
+  <div class="stat-box">💬 <span id="cc">0</span></div>
 </div>
-<div class="search"><input id="s" placeholder="🔍 جستجوی آهنگ..."></div>
+<div class="search"><input id="s" placeholder="🔍 جستجو..."></div>
 <div class="cats" id="cats"></div>
 <div class="songs" id="songs"></div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const SUPABASE_URL = "https://uigclyyoamfqbwekwnvw.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZ2NseXlvYW1mcWJld2t3bnZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MjI5NjAsImV4cCI6MjEwNTE5ODk2MH0.0yc48guH4ZOXw3UBjgv8QuX3eObZ525M5s9__zx770U";
+const URL = "https://uigclyyoamfqbwekwnvw.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZ2NseXlvYW1mcWJld2t3bnZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MjI5NjAsImV4cCI6MjEwNTE5ODk2MH0.0yc48guH4ZOXw3UBjgv8QuX3eObZ525M5s9__zx770U";
 
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient(URL, KEY);
 
 const songs = [
   { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cat: "پاپ" },
@@ -68,30 +67,31 @@ let cat = "all";
 let online = false;
 
 async function load() {
+  // امتحان اتصال
   try {
-    const controller = new AbortController();
-    setTimeout(() => controller.abort(), 3000);
-    const r = await fetch(SUPABASE_URL + "/rest/v1/likes?select=*", {
-      headers: { "apikey": SUPABASE_KEY },
-      signal: controller.signal
-    });
-    online = r.ok;
-  } catch(e) { online = false; }
-
-  if (online) {
-    try {
-      const { data: L } = await sb.from('likes').select('*');
+    const { data: L, error } = await sb.from('likes').select('*');
+    if (!error) {
+      online = true;
+      document.getElementById("badge").textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
+      document.getElementById("badge").style.background = "rgba(6,214,160,0.5)";
+      
       data.likes = {};
       if (L) L.forEach(x => data.likes[x.song_id] = x.count);
-
+      
       const { data: C } = await sb.from('comments').select('*').order('created_at');
       data.comments = {};
       if (C) C.forEach(x => {
         if (!data.comments[x.song_id]) data.comments[x.song_id] = [];
         data.comments[x.song_id].push(x);
       });
-    } catch(e) { console.log(e); }
-  } else {
+    }
+  } catch(e) {
+    console.log("خطا:", e);
+  }
+  
+  if (!online) {
+    document.getElementById("badge").textContent = "📱 حالت محلی (فقط خودت)";
+    document.getElementById("badge").style.background = "rgba(245,158,11,0.5)";
     const saved = localStorage.getItem("musicData");
     if (saved) {
       const d = JSON.parse(saved);
@@ -99,6 +99,7 @@ async function load() {
       data.comments = d.comments || {};
     }
   }
+  
   render();
 }
 
@@ -106,6 +107,7 @@ window.like = async function(id) {
   const n = (data.likes[id] || 0) + 1;
   data.likes[id] = n;
   render();
+  
   if (online) {
     try {
       const { data: ex } = await sb.from('likes').select('*').eq('song_id', id).single();
@@ -129,6 +131,7 @@ window.addC = async function(id) {
   document.getElementById("n-" + id).value = "";
   document.getElementById("t-" + id).value = "";
   document.getElementById("c-" + id).classList.add("show");
+  
   if (online) {
     try { await sb.from('comments').insert({ song_id: id, name: n, text: t }); }
     catch(e) { console.log(e); }
