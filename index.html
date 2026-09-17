@@ -50,16 +50,9 @@ audio{width:100%;margin-bottom:8px}
 <div class="songs" id="songs"></div>
 
 <script>
-// ==========================================
-// 🔑 URL پروکسی Cloudflare (بدون فیلترشکن کار می‌کنه!)
-// ==========================================
 const API = "https://music-api.mhg090909.workers.dev";
 
-const songs = [
-  { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cat: "پاپ" },
-  { id: "song2", name: "علی ایزدی - محلی شیرازی", file: "mahali.mp3", cat: "محلی" }
-];
-
+let songs = [];
 let data = { likes: {}, comments: {} };
 let cat = "all";
 let online = false;
@@ -69,7 +62,6 @@ async function api(path, options = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      "Prefer": "return=minimal",
       ...(options.headers || {})
     }
   });
@@ -78,18 +70,24 @@ async function api(path, options = {}) {
 
 async function load() {
   try {
-    const res = await api("/rest/v1/likes?select=*");
-    if (res.ok) {
+    const resS = await api("/rest/v1/songs?select=*");
+    if (resS.ok) {
+      songs = await resS.json() || [];
+      songs = songs.map(s => ({...s, file: (s.file || "").trim()}));
+    }
+    
+    const resL = await api("/rest/v1/likes?select=*");
+    if (resL.ok) {
       online = true;
       document.getElementById("badge").textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
       document.getElementById("badge").style.background = "rgba(6,214,160,0.5)";
       
-      const L = await res.json();
+      const L = await resL.json();
       data.likes = {};
       if (L) L.forEach(x => data.likes[x.song_id] = x.count);
       
-      const res2 = await api("/rest/v1/comments?select=*&order=created_at");
-      const C = await res2.json();
+      const resC = await api("/rest/v1/comments?select=*&order=created_at");
+      const C = await resC.json();
       data.comments = {};
       if (C) C.forEach(x => {
         if (!data.comments[x.song_id]) data.comments[x.song_id] = [];
@@ -110,6 +108,7 @@ async function load() {
   }
   
   render();
+  renderCats();
 }
 
 window.like = async function(id) {
@@ -155,19 +154,20 @@ window.addC = async function(id) {
   }
 };
 
-const cats = ["all", ...new Set(songs.map(s => s.cat))];
-document.getElementById("cats").innerHTML = cats.map(c =>
-  `<button class="${c==='all'?'active':''}" data-c="${c}">${c==='all'?'همه':c}</button>`
-).join("");
-
-document.getElementById("cats").onclick = e => {
-  if (e.target.tagName === 'BUTTON') {
-    document.querySelectorAll(".cats button").forEach(b => b.classList.remove("active"));
-    e.target.classList.add("active");
-    cat = e.target.dataset.c;
-    render();
-  }
-};
+function renderCats() {
+  const cats = ["all", ...new Set(songs.map(s => s.cat).filter(c => c))];
+  document.getElementById("cats").innerHTML = cats.map(c =>
+    `<button class="${c==='all'?'active':''}" data-c="${c}">${c==='all'?'همه':c}</button>`
+  ).join("");
+  document.getElementById("cats").onclick = e => {
+    if (e.target.tagName === 'BUTTON') {
+      document.querySelectorAll(".cats button").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      cat = e.target.dataset.c;
+      render();
+    }
+  };
+}
 
 document.getElementById("s").oninput = render;
 
