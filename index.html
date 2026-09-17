@@ -91,13 +91,11 @@ body.dark .cform input{background:#1a1a2e;color:#fff;border-color:#444}
 
 .warn{color:var(--warn);font-size:0.8rem;margin-top:5px;font-weight:700}
 
-/* Toast */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#059669);color:#fff;padding:15px 25px;border-radius:15px;font-weight:700;box-shadow:0 15px 40px rgba(0,0,0,0.3);z-index:9999;display:none;animation:toastIn 0.3s}
 .toast.error{background:linear-gradient(135deg,var(--danger),#dc2626)}
 .toast.show{display:block}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-30px)}to{opacity:1;transform:translate(-50%,0)}}
 
-/* مودال رمز ادمین */
 .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
 .modal.show{display:flex}
 .modal-content{background:#fff;color:#333;border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.5);animation:modalIn 0.4s}
@@ -118,7 +116,6 @@ body.dark .modal-content input{background:#1a1a2e;color:#fff;border-color:#444}
 
 <div class="toast" id="toast"></div>
 
-<!-- مودال رمز ادمین -->
 <div class="modal" id="adminModal">
   <div class="modal-content">
     <h2>🔐 ورود ادمین</h2>
@@ -151,9 +148,7 @@ body.dark .modal-content input{background:#1a1a2e;color:#fff;border-color:#444}
 <div class="songs" id="songs"></div>
 
 <script>
-// ==========================================
 // 🔒 ضد هک
-// ==========================================
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
   if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
@@ -163,14 +158,10 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('dragstart', e => e.preventDefault());
 
-// ==========================================
-// 🔑 رمز ادمین (اینجا رو عوض کن)
-// ==========================================
-const ADMIN_PASSWORD = "mhg2026";  // ← رمز ادمین رو عوض کن!
+// 🔑 رمز ادمین
+const ADMIN_PASSWORD = "mhg2026";
 
-// ==========================================
 // 🎯 داده‌ها
-// ==========================================
 const API = "https://music-api.mhg090909.workers.dev";
 const BAD_WORDS = ["فحش","احمق","خری","کثافت","بی‌شعور","بیشعور","دیوث","کس","کیر","جنده","لاشی","پدرسگ","مادر","خواهر","لعنت","مرگ","نفرین","حروم","حرومزاده","خار","کونی","گایید","بگا","سگ","پفیوز","کص","کون","جقی","عن","شاش","گوه"];
 
@@ -181,9 +172,7 @@ let online = false;
 let sortType = "like";
 let isAdmin = sessionStorage.getItem("isAdmin") === "1";
 
-// ==========================================
 // 📢 Toast
-// ==========================================
 function toast(msg, isError = false) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -191,19 +180,16 @@ function toast(msg, isError = false) {
   setTimeout(() => t.classList.remove("show"), 3000);
 }
 
-// ==========================================
 // 🔐 ادمین
-// ==========================================
 window.openAdmin = function() {
   if (isAdmin) {
-    // خروج از ادمین
     isAdmin = false;
     sessionStorage.removeItem("isAdmin");
     document.getElementById("adminBtn").textContent = "🔐 ورود ادمین";
     document.getElementById("adminBtn").classList.remove("admin-active");
     document.getElementById("badge").classList.remove("admin-badge");
     toast("🔓 از ادمین خارج شدی");
-    render();
+    load();
     return;
   }
   document.getElementById("adminModal").classList.add("show");
@@ -225,16 +211,14 @@ window.checkAdmin = function() {
     document.getElementById("badge").classList.add("admin-badge");
     closeAdmin();
     toast("✅ به ادمین خوش آمدی!");
-    render();
+    load();
   } else {
     toast("❌ رمز اشتباهه!", true);
     document.getElementById("adminPass").value = "";
   }
 };
 
-// ==========================================
 // 🌐 API
-// ==========================================
 async function api(path, options = {}) {
   const res = await fetch(API + path, {
     ...options,
@@ -246,9 +230,7 @@ async function api(path, options = {}) {
   return res;
 }
 
-// ==========================================
 // 📥 بارگذاری
-// ==========================================
 async function load() {
   try {
     const resS = await api("/rest/v1/songs?select=*");
@@ -264,9 +246,11 @@ async function load() {
       if (!isAdmin) {
         badge.textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
         badge.style.background = "rgba(6,214,160,0.5)";
+        badge.classList.remove("admin-badge");
       } else {
         badge.textContent = "👑 حالت ادمین (می‌تونی کامنت حذف کنی)";
         badge.style.background = "rgba(245,158,11,0.5)";
+        badge.classList.add("admin-badge");
       }
       
       const L = await resL.json();
@@ -278,7 +262,12 @@ async function load() {
       data.comments = {};
       if (C) C.forEach(x => {
         if (!data.comments[x.song_id]) data.comments[x.song_id] = [];
-        data.comments[x.song_id].push({...x, time: new Date(x.created_at).getTime()});
+        data.comments[x.song_id].push({
+          id: x.id,
+          name: x.name,
+          text: x.text,
+          time: new Date(x.created_at).getTime()
+        });
       });
     }
   } catch(e) { console.log(e); }
@@ -298,9 +287,7 @@ async function load() {
   renderCats();
 }
 
-// ==========================================
 // ❤️ لایک
-// ==========================================
 window.like = async function(id) {
   if (localStorage.getItem("liked_" + id) === "1") {
     toast("❌ قبلاً لایک زدی!", true);
@@ -326,9 +313,7 @@ window.like = async function(id) {
   }
 };
 
-// ==========================================
 // 💬 کامنت
-// ==========================================
 window.toggle = id => document.getElementById("c-" + id).classList.toggle("show");
 
 window.addC = async function(id) {
@@ -345,13 +330,8 @@ window.addC = async function(id) {
   if (t.length > 500) return toast("❌ کامنت طولانیه!", true);
   if (n.length > 50) return toast("❌ اسم طولانیه!", true);
   
-  const newComment = { name: n, text: t, time: Date.now() };
-  if (!data.comments[id]) data.comments[id] = [];
-  data.comments[id].push(newComment);
-  render();
   document.getElementById("n-" + id).value = "";
   document.getElementById("t-" + id).value = "";
-  document.getElementById("c-" + id).classList.add("show");
   toast("✅ کامنت ثبت شد!");
   
   if (online) {
@@ -360,16 +340,20 @@ window.addC = async function(id) {
         method: "POST",
         body: JSON.stringify({ song_id: id, name: n, text: t })
       });
+      await load();
+      document.getElementById("c-" + id).classList.add("show");
     } catch(e) { console.log(e); }
   } else {
+    if (!data.comments[id]) data.comments[id] = [];
+    data.comments[id].push({ id: Date.now(), name: n, text: t, time: Date.now() });
     localStorage.setItem("musicData", JSON.stringify(data));
+    render();
+    document.getElementById("c-" + id).classList.add("show");
   }
 };
 
-// ==========================================
-// 🗑️ حذف کامنت (فقط ادمین)
-// ==========================================
-window.deleteComment = async function(songId, commentTime) {
+// 🗑️ حذف کامنت (فقط ادمین) - با id
+window.deleteComment = async function(songId, commentId) {
   if (!isAdmin) {
     toast("❌ فقط ادمین می‌تونه کامنت حذف کنه!", true);
     return;
@@ -377,24 +361,34 @@ window.deleteComment = async function(songId, commentTime) {
   
   if (!confirm("مطمئنی می‌خوای این کامنت رو حذف کنی؟")) return;
   
-  data.comments[songId] = data.comments[songId].filter(c => c.time !== commentTime);
+  // حذف از حافظه
+  if (data.comments[songId]) {
+    data.comments[songId] = data.comments[songId].filter(c => String(c.id) !== String(commentId));
+  }
   render();
   toast("🗑️ حذف شد!");
   
+  // حذف از Supabase با id
   if (online) {
     try {
-      await api(`/rest/v1/comments?song_id=eq.${songId}&created_at=eq.${new Date(commentTime).toISOString()}`, {
+      const res = await api(`/rest/v1/comments?id=eq.${commentId}`, {
         method: "DELETE"
       });
-    } catch(e) { console.log(e); }
+      if (!res.ok) {
+        console.log("خطا:", await res.text());
+        toast("❌ خطا در حذف!", true);
+        load();
+      }
+    } catch(e) {
+      console.log(e);
+      toast("❌ خطا در حذف!", true);
+    }
   } else {
     localStorage.setItem("musicData", JSON.stringify(data));
   }
 };
 
-// ==========================================
 // 📤 اشتراک
-// ==========================================
 window.share = function(name, file) {
   const url = window.location.origin + window.location.pathname + file;
   const text = `🎵 ${name}\n${url}`;
@@ -405,18 +399,14 @@ window.share = function(name, file) {
   }
 };
 
-// ==========================================
 // 🔄 مرتب‌سازی
-// ==========================================
 window.sortBy = function(type) {
   sortType = type;
   render();
   toast("🔄 مرتب شد!");
 };
 
-// ==========================================
 // دسته‌بندی
-// ==========================================
 function renderCats() {
   const cats = ["all", ...new Set(songs.map(s => s.cat).filter(c => c))];
   document.getElementById("cats").innerHTML = cats.map(c =>
@@ -434,9 +424,7 @@ function renderCats() {
 
 document.getElementById("s").oninput = render;
 
-// ==========================================
 // 🎨 نمایش
-// ==========================================
 function render() {
   const q = document.getElementById("s").value.toLowerCase();
   let list = [...songs];
@@ -474,7 +462,7 @@ function render() {
                 <span class="time">${c.time ? new Date(c.time).toLocaleString("fa-IR") : ""}</span>
                 <div>${c.text}</div>
               </div>
-              <button class="delete-btn ${isAdmin?'show':''}" onclick="window.deleteComment('${s.id}', ${c.time})">🗑️</button>
+              <button class="delete-btn ${isAdmin?'show':''}" onclick="window.deleteComment('${s.id}', '${c.id}')">🗑️</button>
             </div>`).join("")}
           <div class="cform">
             <input id="n-${s.id}" placeholder="اسم" maxlength="50">
@@ -495,9 +483,7 @@ function render() {
   document.getElementById("sc").textContent = songs.length;
 }
 
-// ==========================================
 // 🌙 حالت شب
-// ==========================================
 window.toggleTheme = function() {
   document.body.classList.toggle("dark");
   const isDark = document.body.classList.contains("dark");
@@ -509,9 +495,7 @@ if (localStorage.getItem("theme") === "dark") {
   document.getElementById("themeBtn").textContent = "☀️ حالت روز";
 }
 
-// ==========================================
 // 🚀 شروع
-// ==========================================
 if (isAdmin) {
   document.getElementById("adminBtn").textContent = "🔓 خروج از ادمین";
   document.getElementById("adminBtn").classList.add("admin-active");
