@@ -3,200 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
 <title>🎵 آهنگ‌های من</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
 
-*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
 input,textarea{-webkit-user-select:text;user-select:text}
 
-:root{
-  --primary:#667eea;
-  --secondary:#764ba2;
-  --accent:#06d6a0;
-  --danger:#ef4444;
-  --warn:#f59e0b;
-  --share:#8b5cf6;
-}
+:root{--primary:#667eea;--secondary:#764ba2;--accent:#06d6a0;--danger:#ef4444;--warn:#f59e0b;--share:#8b5cf6}
 
 body{
   font-family:'Vazirmatn',Tahoma,sans-serif;
   background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
   background-size:400% 400%;
   animation:gradientBG 15s ease infinite;
-  min-height:100vh;
-  padding:20px;
-  color:#fff;
-  transition:0.3s;
-  overflow-x:hidden;
+  min-height:100vh;padding:20px;color:#fff;transition:0.3s;overflow-x:hidden;
 }
+@keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+body.dark{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);background-size:400% 400%;animation:gradientBG 15s ease infinite}
 
-@keyframes gradientBG{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-
-body.dark{
-  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
-  background-size:400% 400%;
-  animation:gradientBG 15s ease infinite;
-}
-
-h1{
-  text-align:center;
-  font-size:2.5rem;
-  font-weight:900;
-  margin-bottom:10px;
-  text-shadow:0 5px 20px rgba(0,0,0,0.3);
-  animation:titleFloat 3s ease-in-out infinite;
-}
-
-@keyframes titleFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
-}
+h1{text-align:center;font-size:2.5rem;font-weight:900;margin-bottom:10px;text-shadow:0 5px 20px rgba(0,0,0,0.3);animation:titleFloat 3s ease-in-out infinite}
+@keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
 .stats{display:flex;justify-content:center;gap:15px;margin-bottom:25px;flex-wrap:wrap}
-.stat-box{
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  padding:12px 22px;
-  border-radius:50px;
-  font-size:0.9rem;
-  border:1px solid rgba(255,255,255,0.3);
-  transition:0.3s;
-  cursor:default;
-}
+.stat-box{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);padding:12px 22px;border-radius:50px;font-size:0.9rem;border:1px solid rgba(255,255,255,0.3);transition:0.3s}
 .stat-box:hover{transform:translateY(-3px);background:rgba(255,255,255,0.3)}
 
-.badge{
-  text-align:center;
-  margin-bottom:15px;
-  padding:8px 15px;
-  border-radius:50px;
-  display:inline-block;
-  font-size:0.85rem;
-  transition:0.3s;
-}
+.badge{text-align:center;margin-bottom:15px;padding:8px 15px;border-radius:50px;display:inline-block;font-size:0.85rem;transition:0.3s}
+.admin-badge{background:rgba(245,158,11,0.5) !important;color:#fff}
 
 .top-bar{display:flex;justify-content:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.top-bar button{
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(10px);
-  color:#fff;
-  border:2px solid rgba(255,255,255,0.4);
-  padding:10px 18px;
-  border-radius:50px;
-  cursor:pointer;
-  font-family:'Vazirmatn',Tahoma;
-  font-size:0.85rem;
-  font-weight:700;
-  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-  position:relative;
-  overflow:hidden;
-}
-.top-bar button::before{
-  content:'';
-  position:absolute;
-  top:50%;left:50%;
-  width:0;height:0;
-  background:rgba(255,255,255,0.3);
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  transition:width 0.6s,height 0.6s;
-}
-.top-bar button:hover::before{width:300px;height:300px}
-.top-bar button:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.3)}
+.top-bar button{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);color:#fff;border:2px solid rgba(255,255,255,0.4);padding:10px 18px;border-radius:50px;cursor:pointer;font-family:'Vazirmatn';font-size:0.85rem;font-weight:700;transition:all 0.3s}
+.top-bar button:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.3);background:rgba(255,255,255,0.3)}
+.top-bar button.admin-active{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:#f59e0b}
 
-.search{max-width:500px;margin:0 auto 20px;position:relative}
-.search input{
-  width:100%;
-  padding:15px 25px;
-  border:none;
-  border-radius:50px;
-  font-family:'Vazirmatn',Tahoma;
-  font-size:1rem;
-  outline:none;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
-  transition:0.3s;
-}
+.search{max-width:500px;margin:0 auto 20px}
+.search input{width:100%;padding:15px 25px;border:none;border-radius:50px;font-family:'Vazirmatn';font-size:1rem;outline:none;box-shadow:0 10px 30px rgba(0,0,0,0.2);transition:0.3s}
 .search input:focus{box-shadow:0 15px 40px rgba(0,0,0,0.3);transform:scale(1.02)}
 
 .cats{display:flex;justify-content:center;gap:10px;margin-bottom:30px;flex-wrap:wrap}
-.cats button{
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(10px);
-  color:#fff;
-  border:2px solid rgba(255,255,255,0.4);
-  padding:8px 20px;
-  border-radius:50px;
-  cursor:pointer;
-  font-family:'Vazirmatn',Tahoma;
-  font-weight:700;
-  transition:0.3s;
-}
-.cats button.active,.cats button:hover{
-  background:#fff;
-  color:var(--primary);
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.3);
-}
+.cats button{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);color:#fff;border:2px solid rgba(255,255,255,0.4);padding:8px 20px;border-radius:50px;cursor:pointer;font-family:'Vazirmatn';font-weight:700;transition:0.3s}
+.cats button.active,.cats button:hover{background:#fff;color:var(--primary);transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.3)}
 
 .songs{max-width:850px;margin:0 auto;display:grid;gap:20px}
-.song{
-  background:rgba(255,255,255,0.98);
-  color:#333;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.25);
-  display:flex;
-  gap:20px;
-  align-items:center;
-  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
-  animation:slideUp 0.6s ease-out;
-  position:relative;
-  overflow:hidden;
-}
-
-@keyframes slideUp{
-  from{opacity:0;transform:translateY(30px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-.song::before{
-  content:'';
-  position:absolute;
-  top:0;left:-100%;
-  width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(102,126,234,0.1),transparent);
-  transition:left 0.6s;
-}
-.song:hover::before{left:100%}
-
+.song{background:rgba(255,255,255,0.98);color:#333;border-radius:20px;padding:20px;box-shadow:0 15px 40px rgba(0,0,0,0.25);display:flex;gap:20px;align-items:center;transition:all 0.4s;animation:slideUp 0.6s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 .song:hover{transform:translateY(-5px) scale(1.01);box-shadow:0 25px 60px rgba(0,0,0,0.35)}
-
 body.dark .song{background:#2a2a3e;color:#fff}
 
-.cover{
-  width:90px;height:90px;
-  border-radius:15px;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  display:flex;align-items:center;justify-content:center;
-  font-size:2.5rem;flex-shrink:0;
-  transition:0.3s;
-  box-shadow:0 10px 25px rgba(102,126,234,0.4);
-  animation:pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse{
-  0%,100%{box-shadow:0 10px 25px rgba(102,126,234,0.4)}
-  50%{box-shadow:0 15px 40px rgba(102,126,234,0.7)}
-}
-
+.cover{width:90px;height:90px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;transition:0.3s;box-shadow:0 10px 25px rgba(102,126,234,0.4)}
 .song:hover .cover{transform:rotate(10deg) scale(1.1)}
 
 .info{flex:1}
@@ -204,21 +59,8 @@ body.dark .song{background:#2a2a3e;color:#fff}
 audio{width:100%;margin-bottom:8px;border-radius:50px}
 
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.actions button,.actions a{
-  padding:10px 18px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-family:'Vazirmatn',Tahoma;
-  font-weight:700;
-  color:#fff;
-  text-decoration:none;
-  font-size:0.9rem;
-  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
-}
+.actions button,.actions a{padding:10px 18px;border:none;border-radius:10px;cursor:pointer;font-family:'Vazirmatn';font-weight:700;color:#fff;text-decoration:none;font-size:0.9rem;transition:all 0.3s;box-shadow:0 5px 15px rgba(0,0,0,0.2)}
 .actions button:hover,.actions a:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 10px 25px rgba(0,0,0,0.3)}
-.actions button:active,.actions a:active{transform:scale(0.95)}
 
 .like{background:linear-gradient(135deg,#ef4444,#dc2626)}
 .like.liked{background:linear-gradient(135deg,#6b7280,#4b5563)}
@@ -226,97 +68,67 @@ audio{width:100%;margin-bottom:8px;border-radius:50px}
 .cmt{background:linear-gradient(135deg,#f59e0b,#d97706)}
 .share{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
 
-.comments{
-  display:none;
-  margin-top:15px;
-  padding-top:15px;
-  border-top:1px solid #eee;
-  animation:slideDown 0.3s ease-out;
-}
-@keyframes slideDown{
-  from{opacity:0;max-height:0}
-  to{opacity:1;max-height:2000px}
-}
+.comments{display:none;margin-top:15px;padding-top:15px;border-top:1px solid #eee}
 body.dark .comments{border-color:#444}
 .comments.show{display:block}
 
-.comment{
-  background:rgba(245,245,245,0.9);
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-  animation:slideUp 0.3s;
-  transition:0.3s;
-}
-.comment:hover{transform:translateX(-5px);box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.comment{background:rgba(245,245,245,0.9);padding:12px;border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;transition:0.3s}
+.comment:hover{transform:translateX(-5px)}
 body.dark .comment{background:#1a1a2e}
 .comment .content{flex:1}
 .comment b{color:var(--primary);font-weight:900}
 .comment .time{font-size:0.75rem;color:#999;margin-right:10px}
-.comment .delete-btn{
-  background:linear-gradient(135deg,#ef4444,#dc2626);
-  color:#fff;border:none;border-radius:8px;
-  padding:6px 10px;cursor:pointer;font-size:0.8rem;
-  transition:0.3s;
-}
+.comment .delete-btn{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:0.8rem;transition:0.3s;display:none}
+.comment .delete-btn.show{display:block}
 .comment .delete-btn:hover{transform:scale(1.1)}
 
 .cform{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
-.cform input{
-  flex:1;min-width:100px;padding:10px;
-  border:2px solid #ddd;border-radius:10px;
-  font-family:'Vazirmatn',Tahoma;
-  transition:0.3s;
-}
+.cform input{flex:1;min-width:100px;padding:10px;border:2px solid #ddd;border-radius:10px;font-family:'Vazirmatn';transition:0.3s}
 .cform input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(102,126,234,0.2)}
 body.dark .cform input{background:#1a1a2e;color:#fff;border-color:#444}
-.cform button{
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  color:#fff;border:none;padding:10px 20px;border-radius:10px;
-  cursor:pointer;font-family:'Vazirmatn',Tahoma;font-weight:700;
-  transition:0.3s;
-}
+.cform button{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-family:'Vazirmatn';font-weight:700;transition:0.3s}
 .cform button:hover{transform:scale(1.05);box-shadow:0 10px 25px rgba(102,126,234,0.5)}
 
 .warn{color:var(--warn);font-size:0.8rem;margin-top:5px;font-weight:700}
 
 /* Toast */
-.toast{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:linear-gradient(135deg,var(--accent),#059669);
-  color:#fff;
-  padding:15px 25px;
-  border-radius:15px;
-  font-weight:700;
-  box-shadow:0 15px 40px rgba(0,0,0,0.3);
-  z-index:9999;
-  display:none;
-  animation:toastIn 0.3s;
-}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#059669);color:#fff;padding:15px 25px;border-radius:15px;font-weight:700;box-shadow:0 15px 40px rgba(0,0,0,0.3);z-index:9999;display:none;animation:toastIn 0.3s}
 .toast.error{background:linear-gradient(135deg,var(--danger),#dc2626)}
 .toast.show{display:block}
-@keyframes toastIn{
-  from{opacity:0;transform:translate(-50%,-30px)}
-  to{opacity:1;transform:translate(-50%,0)}
-}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-30px)}to{opacity:1;transform:translate(-50%,0)}}
 
-@media(max-width:600px){
-  h1{font-size:1.8rem}
-  .song{flex-direction:column;text-align:center}
-  .actions{justify-content:center}
-}
+/* مودال رمز ادمین */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.modal.show{display:flex}
+.modal-content{background:#fff;color:#333;border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.5);animation:modalIn 0.4s}
+body.dark .modal-content{background:#2a2a3e;color:#fff}
+@keyframes modalIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+.modal-content h2{margin-bottom:20px;color:var(--primary)}
+.modal-content input{width:100%;padding:15px;border:2px solid #ddd;border-radius:10px;font-family:'Vazirmatn';font-size:1rem;margin-bottom:15px;text-align:center}
+body.dark .modal-content input{background:#1a1a2e;color:#fff;border-color:#444}
+.modal-content input:focus{border-color:var(--primary);outline:none}
+.modal-content button{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;padding:12px 30px;border-radius:10px;cursor:pointer;font-family:'Vazirmatn';font-weight:700;font-size:1rem;margin:5px;transition:0.3s}
+.modal-content button:hover{transform:scale(1.05)}
+.modal-content button.cancel{background:linear-gradient(135deg,#6b7280,#4b5563)}
+
+@media(max-width:600px){h1{font-size:1.8rem}.song{flex-direction:column;text-align:center}.actions{justify-content:center}}
 </style>
 </head>
 <body>
 
 <div class="toast" id="toast"></div>
+
+<!-- مودال رمز ادمین -->
+<div class="modal" id="adminModal">
+  <div class="modal-content">
+    <h2>🔐 ورود ادمین</h2>
+    <input type="password" id="adminPass" placeholder="رمز عبور..." onkeypress="if(event.key==='Enter')checkAdmin()">
+    <div>
+      <button onclick="checkAdmin()">ورود</button>
+      <button class="cancel" onclick="closeAdmin()">انصراف</button>
+    </div>
+  </div>
+</div>
 
 <h1>🎵 آهنگ‌های من</h1>
 <div style="text-align:center"><span class="badge" id="badge">⏳ در حال بررسی...</span></div>
@@ -326,6 +138,7 @@ body.dark .cform input{background:#1a1a2e;color:#fff;border-color:#444}
   <button onclick="sortBy('like')">🔥 پرطرفدار</button>
   <button onclick="sortBy('new')">🆕 جدیدترین</button>
   <button onclick="sortBy('name')">🔤 الفبایی</button>
+  <button onclick="openAdmin()" id="adminBtn">🔐 ورود ادمین</button>
 </div>
 
 <div class="stats">
@@ -339,20 +152,21 @@ body.dark .cform input{background:#1a1a2e;color:#fff;border-color:#444}
 
 <script>
 // ==========================================
-// 🔒 ضد هک و ضد کپی
+// 🔒 ضد هک
 // ==========================================
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
-  // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-  if (e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
-      (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+  if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
     e.preventDefault();
     return false;
   }
 });
 document.addEventListener('dragstart', e => e.preventDefault());
-document.addEventListener('selectstart', e => e.preventDefault());
+
+// ==========================================
+// 🔑 رمز ادمین (اینجا رو عوض کن)
+// ==========================================
+const ADMIN_PASSWORD = "mhg2026";  // ← رمز ادمین رو عوض کن!
 
 // ==========================================
 // 🎯 داده‌ها
@@ -365,6 +179,7 @@ let data = { likes: {}, comments: {} };
 let cat = "all";
 let online = false;
 let sortType = "like";
+let isAdmin = sessionStorage.getItem("isAdmin") === "1";
 
 // ==========================================
 // 📢 Toast
@@ -375,6 +190,47 @@ function toast(msg, isError = false) {
   t.className = "toast show" + (isError ? " error" : "");
   setTimeout(() => t.classList.remove("show"), 3000);
 }
+
+// ==========================================
+// 🔐 ادمین
+// ==========================================
+window.openAdmin = function() {
+  if (isAdmin) {
+    // خروج از ادمین
+    isAdmin = false;
+    sessionStorage.removeItem("isAdmin");
+    document.getElementById("adminBtn").textContent = "🔐 ورود ادمین";
+    document.getElementById("adminBtn").classList.remove("admin-active");
+    document.getElementById("badge").classList.remove("admin-badge");
+    toast("🔓 از ادمین خارج شدی");
+    render();
+    return;
+  }
+  document.getElementById("adminModal").classList.add("show");
+  setTimeout(() => document.getElementById("adminPass").focus(), 100);
+};
+
+window.closeAdmin = function() {
+  document.getElementById("adminModal").classList.remove("show");
+  document.getElementById("adminPass").value = "";
+};
+
+window.checkAdmin = function() {
+  const pass = document.getElementById("adminPass").value;
+  if (pass === ADMIN_PASSWORD) {
+    isAdmin = true;
+    sessionStorage.setItem("isAdmin", "1");
+    document.getElementById("adminBtn").textContent = "🔓 خروج از ادمین";
+    document.getElementById("adminBtn").classList.add("admin-active");
+    document.getElementById("badge").classList.add("admin-badge");
+    closeAdmin();
+    toast("✅ به ادمین خوش آمدی!");
+    render();
+  } else {
+    toast("❌ رمز اشتباهه!", true);
+    document.getElementById("adminPass").value = "";
+  }
+};
 
 // ==========================================
 // 🌐 API
@@ -404,8 +260,14 @@ async function load() {
     const resL = await api("/rest/v1/likes?select=*");
     if (resL.ok) {
       online = true;
-      document.getElementById("badge").textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
-      document.getElementById("badge").style.background = "rgba(6,214,160,0.5)";
+      const badge = document.getElementById("badge");
+      if (!isAdmin) {
+        badge.textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
+        badge.style.background = "rgba(6,214,160,0.5)";
+      } else {
+        badge.textContent = "👑 حالت ادمین (می‌تونی کامنت حذف کنی)";
+        badge.style.background = "rgba(245,158,11,0.5)";
+      }
       
       const L = await resL.json();
       data.likes = {};
@@ -480,8 +342,8 @@ window.addC = async function(id) {
     }
   }
   
-  if (t.length > 500) return toast("❌ کامنت طولانیه! (حداکثر ۵۰۰)", true);
-  if (n.length > 50) return toast("❌ اسم طولانیه! (حداکثر ۵۰)", true);
+  if (t.length > 500) return toast("❌ کامنت طولانیه!", true);
+  if (n.length > 50) return toast("❌ اسم طولانیه!", true);
   
   const newComment = { name: n, text: t, time: Date.now() };
   if (!data.comments[id]) data.comments[id] = [];
@@ -505,9 +367,14 @@ window.addC = async function(id) {
 };
 
 // ==========================================
-// 🗑️ حذف کامنت
+// 🗑️ حذف کامنت (فقط ادمین)
 // ==========================================
 window.deleteComment = async function(songId, commentTime) {
+  if (!isAdmin) {
+    toast("❌ فقط ادمین می‌تونه کامنت حذف کنه!", true);
+    return;
+  }
+  
   if (!confirm("مطمئنی می‌خوای این کامنت رو حذف کنی؟")) return;
   
   data.comments[songId] = data.comments[songId].filter(c => c.time !== commentTime);
@@ -607,7 +474,7 @@ function render() {
                 <span class="time">${c.time ? new Date(c.time).toLocaleString("fa-IR") : ""}</span>
                 <div>${c.text}</div>
               </div>
-              <button class="delete-btn" onclick="window.deleteComment('${s.id}', ${c.time})">🗑️</button>
+              <button class="delete-btn ${isAdmin?'show':''}" onclick="window.deleteComment('${s.id}', ${c.time})">🗑️</button>
             </div>`).join("")}
           <div class="cform">
             <input id="n-${s.id}" placeholder="اسم" maxlength="50">
@@ -643,8 +510,13 @@ if (localStorage.getItem("theme") === "dark") {
 }
 
 // ==========================================
-// 🚀 شروع + رفرش خودکار هر ۳۰ ثانیه
+// 🚀 شروع
 // ==========================================
+if (isAdmin) {
+  document.getElementById("adminBtn").textContent = "🔓 خروج از ادمین";
+  document.getElementById("adminBtn").classList.add("admin-active");
+}
+
 load();
 setInterval(load, 30000);
 </script>
