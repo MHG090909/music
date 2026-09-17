@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+.<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -69,15 +69,16 @@ body.dark .comment { background: #1a1a2e; color: white; }
 
 <div class="footer">© 2026 - ساخته شده با ❤️</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-
-const app = initializeApp({databaseURL: "https://music-site-a2343-default-rtdb.firebaseio.com/"});
-const db = getDatabase(app);
+<script>
+// ==========================================
+// 🔑 JSONBin - کلیدها
+// ==========================================
+const BIN_ID = "6aab868dffd5d1605310c0e6";
+const API_KEY = "$2a$10$Y0rWfaGPMLaBdNotloTX7e7GUKxtDbFsSqYzXKiXII3aRvby353AS";
+const API_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
 
 // ==========================================
-// 🎵 لیست آهنگ‌ها (اینجا رو دستی عوض کن)
+// 🎵 لیست آهنگ‌ها
 // ==========================================
 const songs = [
   { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cover: "", cat: "پاپ" },
@@ -87,8 +88,42 @@ const songs = [
 let data = { likes: {}, comments: {} };
 let currentCat = "all";
 
-onValue(ref(db, "likes"), s => { data.likes = s.val() || {}; render(); });
-onValue(ref(db, "comments"), s => { data.comments = s.val() || {}; render(); });
+// ==========================================
+// 📥 بارگذاری از JSONBin
+// ==========================================
+async function loadData() {
+  try {
+    const res = await fetch(API_URL + "/latest", {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const json = await res.json();
+    data = json.record || { likes: {}, comments: {} };
+    if (!data.likes) data.likes = {};
+    if (!data.comments) data.comments = {};
+    render();
+  } catch(e) {
+    console.log("خطا در بارگذاری:", e);
+    render();
+  }
+}
+
+// ==========================================
+// 💾 ذخیره در JSONBin
+// ==========================================
+async function saveData() {
+  try {
+    await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {
+    console.log("خطا در ذخیره:", e);
+  }
+}
 
 // ==========================================
 // دسته‌بندی
@@ -159,21 +194,37 @@ function render() {
   updateStats();
 }
 
-window.like = id => runTransaction(ref(db, "likes/" + id), c => (c || 0) + 1);
+// ==========================================
+// ❤️ لایک
+// ==========================================
+window.like = function(id) {
+  data.likes[id] = (data.likes[id] || 0) + 1;
+  render();
+  saveData();
+};
+
+// ==========================================
+// 💬 کامنت
+// ==========================================
 window.toggle = id => document.getElementById("c-" + id).classList.toggle("show");
-window.addComment = id => {
+
+window.addComment = function(id) {
   const n = document.getElementById("n-" + id).value.trim();
   const t = document.getElementById("t-" + id).value.trim();
-  if (!n || !t) return alert("پر کن!");
-  push(ref(db, "comments/" + id), { name: n, text: t, time: Date.now() });
+  if (!n || !t) return alert("اسم و کامنت رو پر کن!");
+  if (!data.comments[id]) data.comments[id] = [];
+  data.comments[id].push({ name: n, text: t, time: Date.now() });
+  saveData();
   document.getElementById("n-" + id).value = "";
   document.getElementById("t-" + id).value = "";
+  loadComments(id);
+  updateStats();
 };
 
 function loadComments(id) {
   const el = document.getElementById("cl-" + id);
   if (!el) return;
-  const list = Object.values(data.comments[id] || {}).sort((a,b) => a.time - b.time);
+  const list = (data.comments[id] || []).sort((a,b) => a.time - b.time);
   el.innerHTML = list.length === 0
     ? '<p style="color:#999;font-size:0.85rem">هنوز کامنتی نیست</p>'
     : list.map(c => `<div class="comment"><div class="name">${c.name}</div><div>${c.text}</div></div>`).join("");
@@ -182,7 +233,7 @@ function loadComments(id) {
 function updateStats() {
   let l = 0, c = 0;
   Object.values(data.likes).forEach(v => l += v);
-  Object.values(data.comments).forEach(o => c += Object.keys(o).length);
+  Object.values(data.comments).forEach(arr => c += (arr || []).length);
   document.getElementById("likeCount").textContent = l;
   document.getElementById("commentCount").textContent = c;
   document.getElementById("songCount").textContent = songs.length;
@@ -198,6 +249,9 @@ if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark");
   document.querySelector(".theme-btn").textContent = "☀️ حالت روز";
 }
+
+// شروع
+loadData();
 </script>
 
 </body>
