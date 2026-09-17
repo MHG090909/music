@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+.<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -19,20 +19,17 @@ h1 { color: white; font-size: 2.5rem; margin-bottom: 10px; }
   color: white; padding: 8px 15px; border-radius: 20px;
   cursor: pointer; font-family: Tahoma; font-size: 0.9rem;
 }
-.theme-btn:hover { background: rgba(255,255,255,0.3); }
 
 .stats { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
 .stat-box {
   background: rgba(255,255,255,0.2); color: white;
   padding: 10px 20px; border-radius: 50px; font-size: 0.9rem;
-  backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
 }
 
 .search-box { max-width: 500px; margin: 0 auto 20px; }
 .search-box input {
   width: 100%; padding: 15px 25px; border: none; border-radius: 50px;
   font-size: 1rem; outline: none; font-family: Tahoma;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
 .categories { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
@@ -47,9 +44,8 @@ h1 { color: white; font-size: 2.5rem; margin-bottom: 10px; }
 .song {
   background: white; border-radius: 15px; padding: 20px;
   display: flex; gap: 20px; align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.2s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
-.song:hover { transform: translateY(-3px); }
 body.dark .song { background: #2a2a3e; }
 body.dark .info h3 { color: white; }
 
@@ -95,7 +91,6 @@ body.dark .comment { background: #1a1a2e; color: white; }
 @media (max-width: 600px) {
   h1 { font-size: 1.8rem; }
   .song { flex-direction: column; text-align: center; }
-  .actions { justify-content: center; }
   .theme-btn { position: static; margin-bottom: 15px; }
 }
 </style>
@@ -134,9 +129,6 @@ let songs = {};
 let data = { likes: {}, comments: {} };
 let currentCat = "all";
 
-// ==========================================
-// Firebase
-// ==========================================
 onValue(ref(db, "songs"), s => {
   songs = s.val() || {};
   renderCategories();
@@ -146,9 +138,6 @@ onValue(ref(db, "songs"), s => {
 onValue(ref(db, "likes"), s => { data.likes = s.val() || {}; render(); });
 onValue(ref(db, "comments"), s => { data.comments = s.val() || {}; render(); });
 
-// ==========================================
-// دسته‌بندی
-// ==========================================
 function renderCategories() {
   const songList = Object.values(songs);
   const cats = ["all", ...new Set(songList.map(s => s.cat).filter(c => c))];
@@ -168,9 +157,6 @@ document.getElementById("categories").addEventListener("click", e => {
 
 document.getElementById("search").addEventListener("input", render);
 
-// ==========================================
-// نمایش
-// ==========================================
 function render() {
   const container = document.getElementById("songs");
   const q = document.getElementById("search").value.toLowerCase();
