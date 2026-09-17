@@ -249,7 +249,6 @@ function render() {
   if (currentCat !== "all") list = list.filter(s => s.cat === currentCat);
   if (q) list = list.filter(s => s.name.toLowerCase().includes(q));
   
-  list = [...list].sort((a,b) => (data.likes[b.id]||0) - (data.likes[a.id]||0));
   
   if (list.length === 0) {
     container.innerHTML = '<p class="empty">آهنگی پیدا نشد 🎧</p>';
