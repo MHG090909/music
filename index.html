@@ -262,12 +262,26 @@ async function load() {
   isFirstLoad = false;
 }
 
-// 🔄 رفرش خودکار بدون پرش (هر ۵ ثانیه)
+// 🔄 رفرش خودکار (هر ۵ ثانیه، بدون پرش)
 async function silentRefresh() {
   if (!online || isFirstLoad) return;
   
   try {
-    // لایک‌ها
+    // ۱. آهنگ‌ها (اگه آهنگ جدید اضافه شده)
+    const resS = await api("/rest/v1/songs?select=*");
+    if (resS.ok) {
+      const S = await resS.json() || [];
+      const newSongs = S.map(s => ({...s, file: (s.file || "").trim()}));
+      
+      if (JSON.stringify(newSongs) !== JSON.stringify(songs)) {
+        songs = newSongs;
+        render();
+        renderCats();
+        return;
+      }
+    }
+    
+    // ۲. لایک‌ها
     const resL = await api("/rest/v1/likes?select=*");
     if (resL.ok) {
       const L = await resL.json();
@@ -280,7 +294,7 @@ async function silentRefresh() {
       }
     }
     
-    // کامنت‌ها
+    // ۳. کامنت‌ها
     const resC = await api("/rest/v1/comments?select=*&order=created_at");
     if (resC.ok) {
       const C = await resC.json();
@@ -295,9 +309,7 @@ async function silentRefresh() {
         });
       });
       
-      const oldJson = JSON.stringify(data.comments);
-      const newJson = JSON.stringify(newComments);
-      if (oldJson !== newJson) {
+      if (JSON.stringify(data.comments) !== JSON.stringify(newComments)) {
         data.comments = newComments;
         updateCommentsUI();
       }
@@ -307,7 +319,6 @@ async function silentRefresh() {
   } catch(e) { console.log(e); }
 }
 
-// آپدیت لایک‌ها (بدون پرش)
 function updateLikesUI() {
   document.querySelectorAll(".like").forEach(btn => {
     const songId = btn.getAttribute("data-song-id");
@@ -318,7 +329,6 @@ function updateLikesUI() {
   });
 }
 
-// آپدیت کامنت‌ها (بدون پرش)
 function updateCommentsUI() {
   document.querySelectorAll(".song").forEach(songEl => {
     const songId = songEl.querySelector(".cmt")?.getAttribute("data-song-id");
@@ -326,11 +336,9 @@ function updateCommentsUI() {
     
     const cs = (data.comments[songId] || []).slice().sort((a,b) => (b.time||0) - (a.time||0));
     
-    // دکمه کامنت
     const cmtBtn = songEl.querySelector(".cmt");
     if (cmtBtn) cmtBtn.innerHTML = `💬 کامنت (${cs.length})`;
     
-    // لیست کامنت‌ها
     const listEl = document.getElementById("cl-" + songId);
     if (!listEl) return;
     
@@ -352,13 +360,13 @@ function updateCommentsUI() {
   });
 }
 
-// آپدیت آمار
 function updateStatsUI() {
   let tl = 0, tc = 0;
   Object.values(data.likes).forEach(v => tl += v);
   Object.values(data.comments).forEach(a => tc += (a || []).length);
   document.getElementById("lc").textContent = tl;
   document.getElementById("cc").textContent = tc;
+  document.getElementById("sc").textContent = songs.length;  // ← این خط!
 }
 
 // ❤️ لایک
@@ -415,7 +423,6 @@ window.addC = async function(id) {
         method: "POST",
         body: JSON.stringify({ song_id: id, name: n, text: t })
       });
-      // آپدیت کامنت‌ها بدون رفرش کامل
       const resC = await api("/rest/v1/comments?select=*&order=created_at");
       const C = await resC.json();
       const newComments = {};
@@ -443,7 +450,7 @@ window.addC = async function(id) {
   }
 };
 
-// 🗑️ حذف کامنت (فقط ادمین)
+// 🗑️ حذف کامنت
 window.deleteComment = async function(songId, commentId) {
   if (!isAdmin) {
     toast("❌ فقط ادمین می‌تونه کامنت حذف کنه!", true);
@@ -589,8 +596,6 @@ if (isAdmin) {
 }
 
 load();
-
-// رفرش خودکار هر ۵ ثانیه (بدون پرش)
 setInterval(silentRefresh, 5000);
 </script>
 </body>
