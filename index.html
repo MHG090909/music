@@ -354,12 +354,14 @@ function updateCommentsUI() {
 }
 
 // آپدیت آمار
-function updateStatsUI() {
-  let tl = 0, tc = 0;
-  Object.values(data.likes).forEach(v => tl += v);
-  Object.values(data.comments).forEach(a => tc += (a || []).length);
-  document.getElementById("lc").textContent = tl;
-  document.getElementById("cc").textContent = tc;
+357  function updateStatsUI() {
+358    let tl = 0, tc = 0;
+359    Object.values(data.likes).forEach(v => tl += v);
+360    Object.values(data.comments).forEach(a => tc += (a || []).length);
+361    document.getElementById("lc").textContent = tl;
+362    document.getElementById("cc").textContent = tc;
+363    document.getElementById("sc").textContent = songs.length;  ← این خط اضافه شد
+364  }
 }
 
 // ❤️ لایک
