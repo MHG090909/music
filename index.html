@@ -29,11 +29,12 @@ audio{width:100%;margin-bottom:8px}
 .cform{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
 .cform input{flex:1;min-width:100px;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:Tahoma}
 .cform button{background:#667eea;color:#fff;border:none;padding:8px 15px;border-radius:8px;cursor:pointer}
+.empty{text-align:center;color:#fff;padding:50px}
 </style>
 </head>
 <body>
 <h1>🎵 آهنگ‌های من</h1>
-<div class="stats">❤️ <span id="lc">0</span> | 💬 <span id="cc">0</span></div>
+<div class="stats">❤️ <span id="lc">0</span> | 💬 <span id="cc">0</span> | 🎵 <span id="sc">0</span></div>
 <div class="search"><input id="s" placeholder="🔍 جستجو..."></div>
 <div class="cats" id="cats"></div>
 <div class="songs" id="songs"></div>
@@ -46,24 +47,24 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const songs = [
-  { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cat: "پاپ" },
-  { id: "song2", name: "علی ایزدی - محلی شیرازی", file: "mahali.mp3", cat: "محلی" }
-];
-
-let data = { likes: {}, comments: {} };
-let cat = "all";
+let songs = [], data = { likes: {}, comments: {} }, cat = "all";
 
 async function load() {
+  const { data: S } = await sb.from('songs').select('*');
+  songs = S || [];
+  
   const { data: L } = await sb.from('likes').select('*');
-  const { data: C } = await sb.from('comments').select('*').order('created_at');
   data.likes = {};
-  data.comments = {};
   if (L) L.forEach(x => data.likes[x.song_id] = x.count);
+  
+  const { data: C } = await sb.from('comments').select('*').order('created_at');
+  data.comments = {};
   if (C) C.forEach(x => {
     if (!data.comments[x.song_id]) data.comments[x.song_id] = [];
     data.comments[x.song_id].push(x);
   });
+  
+  renderCats();
   render();
 }
 
@@ -88,57 +89,63 @@ window.addC = async id => {
   await load();
 };
 
-const cats = ["all", ...new Set(songs.map(s => s.cat))];
-document.getElementById("cats").innerHTML = cats.map(c =>
-  `<button class="${c==='all'?'active':''}" data-c="${c}">${c==='all'?'همه':c}</button>`
-).join("");
-
-document.getElementById("cats").onclick = e => {
-  if (e.target.tagName === 'BUTTON') {
-    document.querySelectorAll(".cats button").forEach(b => b.classList.remove("active"));
-    e.target.classList.add("active");
-    cat = e.target.dataset.c;
-    render();
-  }
-};
+function renderCats() {
+  const cats = ["all", ...new Set(songs.map(s => s.cat))];
+  document.getElementById("cats").innerHTML = cats.map(c =>
+    `<button class="${c==='all'?'active':''}" data-c="${c}">${c==='all'?'همه':c}</button>`
+  ).join("");
+  document.getElementById("cats").onclick = e => {
+    if (e.target.tagName === 'BUTTON') {
+      document.querySelectorAll(".cats button").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      cat = e.target.dataset.c;
+      render();
+    }
+  };
+}
 
 document.getElementById("s").oninput = render;
 
 function render() {
   const q = document.getElementById("s").value.toLowerCase();
-  let list = songs;
+  let list = [...songs];
   if (cat !== "all") list = list.filter(s => s.cat === cat);
   if (q) list = list.filter(s => s.name.toLowerCase().includes(q));
   list.sort((a,b) => (data.likes[b.id]||0) - (data.likes[a.id]||0));
   
-  document.getElementById("songs").innerHTML = list.map(s => {
-    const l = data.likes[s.id] || 0;
-    const cs = data.comments[s.id] || [];
-    return `<div class="song">
-      <h3>🎵 ${s.name}</h3>
-      <audio controls src="${s.file}"></audio>
-      <div class="actions">
-        <button class="like" onclick="window.like('${s.id}')">❤️ ${l}</button>
-        <a href="${s.file}" download class="dl">⬇️ دانلود</a>
-        <button class="cmt" onclick="window.toggleC('${s.id}')">💬 کامنت</button>
-      </div>
-      <div class="comments" id="c-${s.id}">
-        ${cs.length === 0 ? '<p style="color:#999;font-size:0.85rem">هنوز کامنتی نیست</p>' :
-          cs.map(c => `<div class="comment"><b>${c.name}</b>: ${c.text}</div>`).join("")}
-        <div class="cform">
-          <input id="n-${s.id}" placeholder="اسم">
-          <input id="t-${s.id}" placeholder="کامنت">
-          <button onclick="window.addC('${s.id}')">ارسال</button>
+  if (list.length === 0) {
+    document.getElementById("songs").innerHTML = '<p class="empty">هنوز آهنگی نیست 🎧</p>';
+  } else {
+    document.getElementById("songs").innerHTML = list.map(s => {
+      const l = data.likes[s.id] || 0;
+      const cs = data.comments[s.id] || [];
+      return `<div class="song">
+        <h3>🎵 ${s.name}</h3>
+        <audio controls src="${s.file}"></audio>
+        <div class="actions">
+          <button class="like" onclick="window.like('${s.id}')">❤️ ${l}</button>
+          <a href="${s.file}" download class="dl">⬇️ دانلود</a>
+          <button class="cmt" onclick="window.toggleC('${s.id}')">💬 کامنت</button>
         </div>
-      </div>
-    </div>`;
-  }).join("");
+        <div class="comments" id="c-${s.id}">
+          ${cs.length === 0 ? '<p style="color:#999;font-size:0.85rem">هنوز کامنتی نیست</p>' :
+            cs.map(c => `<div class="comment"><b>${c.name}</b>: ${c.text}</div>`).join("")}
+          <div class="cform">
+            <input id="n-${s.id}" placeholder="اسم">
+            <input id="t-${s.id}" placeholder="کامنت">
+            <button onclick="window.addC('${s.id}')">ارسال</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
   
   let tl = 0, tc = 0;
   Object.values(data.likes).forEach(v => tl += v);
   Object.values(data.comments).forEach(a => tc += a.length);
   document.getElementById("lc").textContent = tl;
   document.getElementById("cc").textContent = tc;
+  document.getElementById("sc").textContent = songs.length;
 }
 
 load();
