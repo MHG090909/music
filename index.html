@@ -49,13 +49,11 @@ audio{width:100%;margin-bottom:8px}
 <div class="cats" id="cats"></div>
 <div class="songs" id="songs"></div>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-const URL = "https://uigclyyoamfqbwekwnvw.supabase.co";
-const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZ2NseXlvYW1mcWJld2t3bnZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MjI5NjAsImV4cCI6MjEwNTE5ODk2MH0.0yc48guH4ZOXw3UBjgv8QuX3eObZ525M5s9__zx770U";
-
-const sb = createClient(URL, KEY);
+<script>
+// ==========================================
+// 🔑 URL پروکسی Cloudflare (بدون فیلترشکن کار می‌کنه!)
+// ==========================================
+const API = "https://music-api.mhg090909.workers.dev";
 
 const songs = [
   { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cat: "پاپ" },
@@ -66,28 +64,39 @@ let data = { likes: {}, comments: {} };
 let cat = "all";
 let online = false;
 
+async function api(path, options = {}) {
+  const res = await fetch(API + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal",
+      ...(options.headers || {})
+    }
+  });
+  return res;
+}
+
 async function load() {
-  // امتحان اتصال
   try {
-    const { data: L, error } = await sb.from('likes').select('*');
-    if (!error) {
+    const res = await api("/rest/v1/likes?select=*");
+    if (res.ok) {
       online = true;
       document.getElementById("badge").textContent = "🌐 حالت مشترک (لایک/کامنت برای همه)";
       document.getElementById("badge").style.background = "rgba(6,214,160,0.5)";
       
+      const L = await res.json();
       data.likes = {};
       if (L) L.forEach(x => data.likes[x.song_id] = x.count);
       
-      const { data: C } = await sb.from('comments').select('*').order('created_at');
+      const res2 = await api("/rest/v1/comments?select=*&order=created_at");
+      const C = await res2.json();
       data.comments = {};
       if (C) C.forEach(x => {
         if (!data.comments[x.song_id]) data.comments[x.song_id] = [];
         data.comments[x.song_id].push(x);
       });
     }
-  } catch(e) {
-    console.log("خطا:", e);
-  }
+  } catch(e) { console.log(e); }
   
   if (!online) {
     document.getElementById("badge").textContent = "📱 حالت محلی (فقط خودت)";
@@ -110,9 +119,11 @@ window.like = async function(id) {
   
   if (online) {
     try {
-      const { data: ex } = await sb.from('likes').select('*').eq('song_id', id).single();
-      if (ex) await sb.from('likes').update({ count: n }).eq('song_id', id);
-      else await sb.from('likes').insert({ song_id: id, count: n });
+      await api("/rest/v1/likes", {
+        method: "POST",
+        headers: { "Prefer": "resolution=merge-duplicates" },
+        body: JSON.stringify({ song_id: id, count: n })
+      });
     } catch(e) { console.log(e); }
   } else {
     localStorage.setItem("musicData", JSON.stringify(data));
@@ -133,8 +144,12 @@ window.addC = async function(id) {
   document.getElementById("c-" + id).classList.add("show");
   
   if (online) {
-    try { await sb.from('comments').insert({ song_id: id, name: n, text: t }); }
-    catch(e) { console.log(e); }
+    try {
+      await api("/rest/v1/comments", {
+        method: "POST",
+        body: JSON.stringify({ song_id: id, name: n, text: t })
+      });
+    } catch(e) { console.log(e); }
   } else {
     localStorage.setItem("musicData", JSON.stringify(data));
   }
