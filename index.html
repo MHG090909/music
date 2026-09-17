@@ -1,4 +1,4 @@
-.<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -8,74 +8,31 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; transition: 0.3s; }
 body.dark { background: linear-gradient(135deg, #1a1a2e, #16213e); }
-
 header { text-align: center; margin-bottom: 30px; position: relative; }
 h1 { color: white; font-size: 2.5rem; margin-bottom: 10px; }
 .subtitle { color: rgba(255,255,255,0.9); margin-bottom: 20px; }
-
-.theme-btn {
-  position: absolute; top: 0; left: 0;
-  background: rgba(255,255,255,0.2); border: 2px solid white;
-  color: white; padding: 8px 15px; border-radius: 20px;
-  cursor: pointer; font-family: Tahoma; font-size: 0.9rem;
-}
-
+.theme-btn { position: absolute; top: 0; left: 0; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-family: Tahoma; font-size: 0.9rem; }
 .stats { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-.stat-box {
-  background: rgba(255,255,255,0.2); color: white;
-  padding: 10px 20px; border-radius: 50px; font-size: 0.9rem;
-}
-
+.stat-box { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.9rem; }
 .search-box { max-width: 500px; margin: 0 auto 20px; }
-.search-box input {
-  width: 100%; padding: 15px 25px; border: none; border-radius: 50px;
-  font-size: 1rem; outline: none; font-family: Tahoma;
-}
-
+.search-box input { width: 100%; padding: 15px 25px; border: none; border-radius: 50px; font-size: 1rem; outline: none; font-family: Tahoma; }
 .categories { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-.cat-btn {
-  background: rgba(255,255,255,0.2); color: white;
-  border: 2px solid rgba(255,255,255,0.4); padding: 8px 20px;
-  border-radius: 50px; cursor: pointer; font-family: Tahoma; font-size: 0.9rem;
-}
+.cat-btn { background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.4); padding: 8px 20px; border-radius: 50px; cursor: pointer; font-family: Tahoma; font-size: 0.9rem; }
 .cat-btn:hover, .cat-btn.active { background: white; color: #667eea; }
-
 .songs { max-width: 850px; margin: 0 auto; display: grid; gap: 20px; }
-.song {
-  background: white; border-radius: 15px; padding: 20px;
-  display: flex; gap: 20px; align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
+.song { background: white; border-radius: 15px; padding: 20px; display: flex; gap: 20px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 body.dark .song { background: #2a2a3e; }
 body.dark .info h3 { color: white; }
-
-.cover {
-  width: 90px; height: 90px; border-radius: 12px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.5rem; flex-shrink: 0; position: relative; overflow: hidden;
-}
+.cover { width: 90px; height: 90px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; flex-shrink: 0; position: relative; overflow: hidden; }
 .cover img { width: 100%; height: 100%; object-fit: cover; }
-.rank {
-  position: absolute; top: -8px; right: -8px;
-  background: #f59e0b; color: white; width: 30px; height: 30px;
-  border-radius: 50%; display: flex; align-items: center;
-  justify-content: center; font-weight: bold;
-}
-
+.rank { position: absolute; top: -8px; right: -8px; background: #f59e0b; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .info { flex: 1; min-width: 0; }
 .info h3 { color: #333; margin-bottom: 10px; }
 audio { width: 100%; height: 40px; margin-bottom: 8px; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: #06d6a0; color: white; padding: 9px 18px;
-  border-radius: 8px; text-decoration: none; font-weight: bold;
-  font-size: 0.9rem; border: none; cursor: pointer; font-family: Tahoma;
-}
+.btn { display: inline-flex; align-items: center; gap: 5px; background: #06d6a0; color: white; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; font-family: Tahoma; }
 .btn.like { background: #ef4444; }
 .btn.comment { background: #f59e0b; }
-
 .comments { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; display: none; }
 .comments.show { display: block; }
 .comment { background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
@@ -84,15 +41,9 @@ body.dark .comment { background: #1a1a2e; color: white; }
 .comment-form { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
 .comment-form input { flex: 1; min-width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-family: Tahoma; }
 .comment-form button { background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-
 .empty { text-align: center; color: white; padding: 50px; }
 .footer { text-align: center; color: rgba(255,255,255,0.8); margin-top: 40px; padding: 20px; font-size: 0.9rem; }
-
-@media (max-width: 600px) {
-  h1 { font-size: 1.8rem; }
-  .song { flex-direction: column; text-align: center; }
-  .theme-btn { position: static; margin-bottom: 15px; }
-}
+@media (max-width: 600px) { h1 { font-size: 1.8rem; } .song { flex-direction: column; text-align: center; } .theme-btn { position: static; margin-bottom: 15px; } }
 </style>
 </head>
 <body>
@@ -125,26 +76,27 @@ import { getDatabase, ref, onValue, push, runTransaction } from "https://www.gst
 const app = initializeApp({databaseURL: "https://music-site-a2343-default-rtdb.firebaseio.com/"});
 const db = getDatabase(app);
 
-let songs = {};
+// ==========================================
+// 🎵 لیست آهنگ‌ها (اینجا رو دستی عوض کن)
+// ==========================================
+const songs = [
+  { id: "song1", name: "علی منتظری - جانان", file: "janan.mp3", cover: "", cat: "پاپ" },
+  { id: "song2", name: "علی ایزدی - محلی شیرازی", file: "mahali.mp3", cover: "", cat: "محلی" }
+];
+
 let data = { likes: {}, comments: {} };
 let currentCat = "all";
-
-onValue(ref(db, "songs"), s => {
-  songs = s.val() || {};
-  renderCategories();
-  render();
-});
 
 onValue(ref(db, "likes"), s => { data.likes = s.val() || {}; render(); });
 onValue(ref(db, "comments"), s => { data.comments = s.val() || {}; render(); });
 
-function renderCategories() {
-  const songList = Object.values(songs);
-  const cats = ["all", ...new Set(songList.map(s => s.cat).filter(c => c))];
-  document.getElementById("categories").innerHTML = cats.map(c =>
-    `<button class="cat-btn ${c==='all'?'active':''}" data-cat="${c}">${c==='all'?'همه':c}</button>`
-  ).join("");
-}
+// ==========================================
+// دسته‌بندی
+// ==========================================
+const cats = ["all", ...new Set(songs.map(s => s.cat))];
+document.getElementById("categories").innerHTML = cats.map(c =>
+  `<button class="cat-btn ${c==='all'?'active':''}" data-cat="${c}">${c==='all'?'همه':c}</button>`
+).join("");
 
 document.getElementById("categories").addEventListener("click", e => {
   if (e.target.classList.contains("cat-btn")) {
@@ -157,18 +109,21 @@ document.getElementById("categories").addEventListener("click", e => {
 
 document.getElementById("search").addEventListener("input", render);
 
+// ==========================================
+// نمایش
+// ==========================================
 function render() {
   const container = document.getElementById("songs");
   const q = document.getElementById("search").value.toLowerCase();
   
-  let list = Object.values(songs);
+  let list = songs;
   if (currentCat !== "all") list = list.filter(s => s.cat === currentCat);
   if (q) list = list.filter(s => s.name.toLowerCase().includes(q));
   
-  list.sort((a,b) => (data.likes[b.id]||0) - (data.likes[a.id]||0));
+  list = [...list].sort((a,b) => (data.likes[b.id]||0) - (data.likes[a.id]||0));
   
   if (list.length === 0) {
-    container.innerHTML = '<p class="empty">هنوز آهنگی نیست 🎧</p>';
+    container.innerHTML = '<p class="empty">آهنگی پیدا نشد 🎧</p>';
     return;
   }
   
@@ -200,7 +155,7 @@ function render() {
     </div>`;
   }).join("");
   
-  Object.values(songs).forEach(s => loadComments(s.id));
+  songs.forEach(s => loadComments(s.id));
   updateStats();
 }
 
@@ -230,7 +185,7 @@ function updateStats() {
   Object.values(data.comments).forEach(o => c += Object.keys(o).length);
   document.getElementById("likeCount").textContent = l;
   document.getElementById("commentCount").textContent = c;
-  document.getElementById("songCount").textContent = Object.keys(songs).length;
+  document.getElementById("songCount").textContent = songs.length;
 }
 
 window.toggleTheme = function() {
