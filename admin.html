@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🔐 پنل ادمین</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; padding: 20px; color: white; }
+
+h1 { text-align: center; font-size: 2rem; margin-bottom: 30px; }
+h1 span { color: #06d6a0; }
+
+.container { max-width: 700px; margin: 0 auto; }
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+
+.card h2 { color: #06d6a0; margin-bottom: 20px; font-size: 1.3rem; }
+
+/* ===== فرم لاگین ===== */
+.login-form input {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-family: Tahoma;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+.login-form input::placeholder { color: rgba(255,255,255,0.5); }
+.login-form button {
+  width: 100%;
+  padding: 15px;
+  background: #06d6a0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: Tahoma;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.login-form button:hover { background: #05b586; }
+
+/* ===== فرم آهنگ ===== */
+.form-group { margin-bottom: 15px; }
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.95rem;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-family: Tahoma;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 1rem;
+}
+.form-group input::placeholder { color: rgba(255,255,255,0.5); }
+
+.file-info {
+  font-size: 0.85rem;
+  color: #06d6a0;
+  margin-top: 5px;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 15px;
+  background: #06d6a0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: Tahoma;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.btn-save:hover { background: #05b586; }
+
+/* ===== لیست آهنگ‌ها ===== */
+.song-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.song-item .info { flex: 1; }
+.song-item h4 { margin-bottom: 5px; font-size: 1rem; }
+.song-item small { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: Tahoma;
+}
+.btn-delete:hover { background: #dc2626; }
+
+.empty { text-align: center; color: rgba(255,255,255,0.5); padding: 20px; }
+
+/* ===== مخفی ===== */
+.hidden { display: none !important; }
+
+/* ===== پیام ===== */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #06d6a0;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: none;
+}
+.toast.show { display: block; animation: slideDown 0.3s; }
+.toast.error { background: #ef4444; }
+
+@keyframes slideDown {
+  from { transform: translate(-50%, -30px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<h1>🔐 پنل <span>ادمین</span></h1>
+
+<div class="container">
+
+  <!-- ===== لاگین ===== -->
+  <div class="card" id="login-card">
+    <h2>🔑 ورود</h2>
+    <div class="login-form">
+      <input type="password" id="password" placeholder="رمز عبور..." onkeypress="if(event.key==='Enter')login()">
+      <button onclick="login()">ورود</button>
+    </div>
+  </div>
+
+  <!-- ===== فرم آهنگ ===== -->
+  <div class="card hidden" id="song-form-card">
+    <h2>➕ افزودن آهنگ جدید</h2>
+    
+    <div class="form-group">
+      <label>اسم آهنگ</label>
+      <input type="text" id="name" placeholder="مثلاً: علی منتظری - جانان">
+    </div>
+    
+    <div class="form-group">
+      <label>اسم فایل mp3</label>
+      <input type="text" id="file" placeholder="مثلاً: janan.mp3">
+      <div class="file-info">⚠️ فایل mp3 رو جدا تو GitHub آپلود کن</div>
+    </div>
+    
+    <div class="form-group">
+      <label>دسته‌بندی</label>
+      <input type="text" id="cat" placeholder="مثلاً: سنتی، پاپ، محلی">
+    </div>
+    
+    <div class="form-group">
+      <label>لینک عکس (اختیاری)</label>
+      <input type="text" id="cover" placeholder="مثلاً: janan.jpg">
+      <div class="file-info">⚠️ عکس رو جدا تو GitHub آپلود کن</div>
+    </div>
+    
+    <button class="btn-save" onclick="saveSong()">💾 ذخیره آهنگ</button>
+  </div>
+
+  <!-- ===== لیست آهنگ‌ها ===== -->
+  <div class="card hidden" id="songs-list-card">
+    <h2>📋 لیست آهنگ‌ها</h2>
+    <div id="songs-list"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+const app = initializeApp({databaseURL: "https://music-site-a2343-default-rtdb.firebaseio.com/"});
+const db = getDatabase(app);
+
+// ==========================================
+// 🔑 رمز عبور
+// ==========================================
+const PASSWORD = "admin123";  // ← رمز رو عوض کن!
+
+let allSongs = {};
+
+// ==========================================
+// لاگین
+// ==========================================
+window.login = function() {
+  const pass = document.getElementById("password").value;
+  if (pass === PASSWORD) {
+    sessionStorage.setItem("admin", "1");
+    showAdmin();
+    toast("✅ خوش آمدی!", false);
+  } else {
+    toast("❌ رمز اشتباهه!", true);
+  }
+};
+
+function showAdmin() {
+  document.getElementById("login-card").classList.add("hidden");
+  document.getElementById("song-form-card").classList.remove("hidden");
+  document.getElementById("songs-list-card").classList.remove("hidden");
+  loadSongs();
+}
+
+// اگه قبلاً لاگین کرده بود
+if (sessionStorage.getItem("admin") === "1") {
+  showAdmin();
+}
+
+// ==========================================
+// 📥 بارگذاری آهنگ‌ها
+// ==========================================
+function loadSongs() {
+  onValue(ref(db, "songs"), snap => {
+    allSongs = snap.val() || {};
+    renderSongsList();
+  });
+}
+
+function renderSongsList() {
+  const el = document.getElementById("songs-list");
+  const list = Object.entries(allSongs).map(([key, s]) => ({key, ...s}));
+  
+  if (list.length === 0) {
+    el.innerHTML = '<p class="empty">هنوز آهنگی نیست</p>';
+    return;
+  }
+  
+  el.innerHTML = list.map(s => `
+    <div class="song-item">
+      <div class="info">
+        <h4>🎵 ${s.name}</h4>
+        <small>${s.file} | ${s.cat || 'بدون دسته'}</small>
+      </div>
+      <button class="btn-delete" onclick="window.deleteSong('${s.key}')">🗑️</button>
+    </div>
+  `).join("");
+}
+
+// ==========================================
+// 💾 ذخیره آهنگ
+// ==========================================
+window.saveSong = function() {
+  const name = document.getElementById("name").value.trim();
+  const file = document.getElementById("file").value.trim();
+  const cat = document.getElementById("cat").value.trim() || "دیگر";
+  const cover = document.getElementById("cover").value.trim();
+  
+  if (!name || !file) {
+    toast("❌ اسم و فایل رو پر کن!", true);
+    return;
+  }
+  
+  const id = "song" + Date.now();
+  
+  set(ref(db, "songs/" + id), { id, name, file, cat, cover })
+    .then(() => {
+      toast("✅ آهنگ ذخیره شد!", false);
+      document.getElementById("name").value = "";
+      document.getElementById("file").value = "";
+      document.getElementById("cat").value = "";
+      document.getElementById("cover").value = "";
+    })
+    .catch(err => toast("❌ خطا: " + err.message, true));
+};
+
+// ==========================================
+// 🗑️ حذف آهنگ
+// ==========================================
+window.deleteSong = function(key) {
+  if (!confirm("مطمئنی می‌خوای حذف کنی؟")) return;
+  remove(ref(db, "songs/" + key))
+    .then(() => toast("🗑️ حذف شد", false))
+    .catch(err => toast("❌ خطا: " + err.message, true));
+};
+
+// ==========================================
+// 📢 پیام
+// ==========================================
+function toast(msg, isError) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show" + (isError ? " error" : "");
+  setTimeout(() => el.classList.remove("show"), 3000);
+}
+</script>
+
+</body>
+</html>
